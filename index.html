@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14-Day Alarm Link</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            background-color: #f0f2f5;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #4285F4;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        button:hover { background-color: #357ae8; }
+        button:active { background-color: #2a66c7; }
+        p { color: #555; margin-bottom: 20px; }
+        .date-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4285F4;
+        }
+        .date-preview h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        .date-time {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4285F4;
+            margin: 5px 0;
+        }
+        .date-details {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+        .note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>14-Day Alarm</h2>
+    <p>Schedule an event exactly 14 days from now (minus 15 minutes)</p>
+    
+    <div class="date-preview">
+        <h3>Event will be scheduled for:</h3>
+        <div class="date-time" id="eventDate"></div>
+        <div class="date-details" id="eventTime"></div>
+        <div class="date-details" id="eventDay"></div>
+    </div>
+    
+    <button onclick="addToCalendar()">Add to Google Calendar</button>
+    
+    <div class="note">
+        Opens Google Calendar to add the event
+    </div>
+</div>
+<script>
+    // Calculate and display the date immediately when page loads
+    function updateDateDisplay() {
+        const now = new Date();
+        // 14 days - 15 minutes
+        const alarmTime = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000) - (15 * 60 * 1000));
+        
+        // Format date options
+        const dateOptions = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        };
+        
+        const timeOptions = { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true
+        };
+        
+        // Update the display
+        document.getElementById('eventDate').textContent = alarmTime.toLocaleDateString('en-US', dateOptions);
+        document.getElementById('eventTime').textContent = alarmTime.toLocaleTimeString('en-US', timeOptions);
+        
+        // Calculate days from now
+        const daysFromNow = Math.floor((alarmTime - now) / (1000 * 60 * 60 * 24));
+        const hoursRemaining = Math.floor(((alarmTime - now) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        document.getElementById('eventDay').textContent = `(${daysFromNow} days, ${hoursRemaining} hours from now)`;
+    }
+    
+    function addToCalendar() {
+        const now = new Date();
+        // 14 days - 15 minutes
+        const alarmTime = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000) - (15 * 60 * 1000));
+        const endTime = new Date(alarmTime.getTime() + (30 * 60 * 1000));
+        const title = "14-Day Alarm (Offset)";
+        const description = "Auto-generated 14-day reminder.";
+        
+        // Format date for Google Calendar
+        const formatDate = (date) => {
+            return date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+        };
+        
+        // Build Google Calendar URL
+        const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+            `&text=${encodeURIComponent(title)}` +
+            `&dates=${formatDate(alarmTime)}/${formatDate(endTime)}` +
+            `&details=${encodeURIComponent(description)}`;
+        
+        // Open the URL
+        window.open(calendarUrl, '_blank');
+    }
+    
+    // Update display when page loads
+    updateDateDisplay();
+    
+    // Optional: Update every minute to keep it accurate if page stays open
+    setInterval(updateDateDisplay, 60000);
+</script>
+</body>
+</html>
