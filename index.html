@@ -25,7 +25,8 @@
             max-width: 400px;
             width: 100%;
         }
-        button {
+        .calendar-link {
+            display: block;
             padding: 15px 30px;
             font-size: 18px;
             font-weight: bold;
@@ -36,9 +37,11 @@
             cursor: pointer;
             transition: background 0.3s;
             width: 100%;
+            text-decoration: none;
+            box-sizing: border-box;
         }
-        button:hover { background-color: #357ae8; }
-        button:active { background-color: #2a66c7; }
+        .calendar-link:hover { background-color: #357ae8; }
+        .calendar-link:active { background-color: #2a66c7; }
         p { color: #555; margin-bottom: 20px; }
         .date-preview {
             background: #f8f9fa;
@@ -83,10 +86,13 @@
         <div class="date-details" id="eventDay"></div>
     </div>
     
-    <button onclick="addToCalendar()">Add to Google Calendar</button>
+    <a href="#" class="calendar-link" id="calendarLink">Add to Google Calendar</a>
     
     <div class="note">
-        Opens Google Calendar to add the event
+        <strong>Note:</strong> Most mobile browsers will open Google Calendar web version due to security restrictions. To add directly to your calendar app, you can:<br><br>
+        1. Click the button above<br>
+        2. In Google Calendar web, click "Save"<br>
+        3. The event will sync to your Google Calendar app
     </div>
 </div>
 <script>
@@ -118,12 +124,12 @@
         const daysFromNow = Math.floor((alarmTime - now) / (1000 * 60 * 60 * 24));
         const hoursRemaining = Math.floor(((alarmTime - now) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         document.getElementById('eventDay').textContent = `(${daysFromNow} days, ${hoursRemaining} hours from now)`;
+        
+        // Update the calendar link href
+        updateCalendarLink(alarmTime);
     }
     
-    function addToCalendar() {
-        const now = new Date();
-        // 14 days - 15 minutes
-        const alarmTime = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000) - (15 * 60 * 1000));
+    function updateCalendarLink(alarmTime) {
         const endTime = new Date(alarmTime.getTime() + (30 * 60 * 1000));
         const title = "14-Day Alarm (Offset)";
         const description = "Auto-generated 14-day reminder.";
@@ -139,8 +145,8 @@
             `&dates=${formatDate(alarmTime)}/${formatDate(endTime)}` +
             `&details=${encodeURIComponent(description)}`;
         
-        // Open the URL
-        window.open(calendarUrl, '_blank');
+        // Set the href directly on the link
+        document.getElementById('calendarLink').href = calendarUrl;
     }
     
     // Update display when page loads
